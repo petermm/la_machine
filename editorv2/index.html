@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>La Machine Editor V2</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+  </head>
+  <body>
+    <div class="app-shell" data-editorv2-root>
+      <header class="hero">
+        <div>
+          <p class="eyebrow">La Machine</p>
+          <h1>Blockly Choreography Editor</h1>
+          <p class="hero-copy">
+            Single-line choreography editor built to slot into a future
+            LiveView host. The page stays plain HTML, CSS, and small JS
+            modules so the same logic can be mounted elsewhere later.
+          </p>
+        </div>
+        <div class="hero-card">
+          <span class="hero-card-label">Runtime Contract</span>
+          <code>{servo,...}</code>
+          <code>{mp3,...}</code>
+          <code>{wait,...}</code>
+        </div>
+      </header>
+
+      <main class="workspace-layout">
+        <section class="panel left-panel">
+          <div class="scenario-nav-stack">
+            <span class="field-label">Load Existing Scenario</span>
+            <div class="scenario-nav">
+              <button
+                id="scenario-prev"
+                type="button"
+                class="button-secondary nav-arrow"
+                aria-label="Previous scenario"
+              >
+                &larr;
+              </button>
+              <select id="scenario-select">
+                <option value="">Choose from choreographies.json</option>
+              </select>
+              <button
+                id="scenario-next"
+                type="button"
+                class="button-secondary nav-arrow"
+                aria-label="Next scenario"
+              >
+                &rarr;
+              </button>
+            </div>
+          </div>
+
+          <div id="blockly-host" class="blockly-host"></div>
+
+          <div id="blockly-fallback" class="fallback hidden">
+            <h3>Blockly did not load</h3>
+            <p>
+              The parser and visualization still work, but the block workspace
+              needs the Blockly CDN script. This is fine for the prototype and
+              can be vendored when it moves into LiveView.
+            </p>
+          </div>
+
+          <div class="editor-support">
+            <div class="field-grid">
+              <label class="field">
+                <span>Scenario name</span>
+                <input id="scenario-name" type="text" value="calm_01230" />
+              </label>
+
+              <label class="field">
+                <span>Sounds base URL</span>
+                <input id="sounds-base-url" type="text" value="../sounds/" />
+              </label>
+            </div>
+
+            <label class="field">
+              <span>Paste a choreography string or a full JSON line</span>
+              <textarea
+                id="source-text"
+                rows="5"
+              >"{servo, 24, 820}, {wait, 2054}, {servo, 100}, {wait, 8}, {mp3, &lt;&lt;\"calm/01230.mp3\"&gt;&gt;}, {wait, 582}, {servo, 0, 1220}"</textarea>
+            </label>
+
+            <div class="button-row">
+              <button id="parse-text" type="button">Import To Blocks</button>
+              <button id="load-sample" type="button" class="button-secondary">Load Sample</button>
+              <button id="copy-sequence" type="button" class="button-secondary">Copy Sequence</button>
+              <button id="copy-json-line" type="button" class="button-secondary">Copy JSON Line</button>
+            </div>
+
+            <div class="status-stack">
+              <span class="field-label">Status</span>
+              <div id="status-line" class="status-line">Initializing editor...</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel right-panel">
+          <div class="panel-header">
+            <h2>Preview</h2>
+          </div>
+
+          <div class="preview-transport">
+            <button id="preview-play-toggle" type="button">Play Preview</button>
+            <button id="preview-pause-toggle" type="button" class="button-secondary">Reset</button>
+            <div class="preview-transport-meta">
+              <span class="field-label">Transport</span>
+              <div class="preview-transport-status">
+                <strong id="preview-time-label">0.0s / 0.0s</strong>
+              </div>
+            </div>
+          </div>
+
+          <canvas id="machine-canvas" class="machine-canvas" width="1200" height="320"></canvas>
+          <canvas id="timeline-canvas" class="timeline-canvas" width="1200" height="560"></canvas>
+
+          <div class="summary-strip">
+            <div class="summary-card">
+              <span class="summary-label">Duration</span>
+              <strong id="duration-label">0 ms</strong>
+            </div>
+            <div class="summary-card">
+              <span class="summary-label">Steps</span>
+              <strong id="step-count-label">0</strong>
+            </div>
+            <div class="summary-card">
+              <span class="summary-label">Audio Clips</span>
+              <strong id="audio-count-label">0</strong>
+            </div>
+            <div class="summary-card">
+              <span class="summary-label">Servo Moves</span>
+              <strong id="servo-count-label">0</strong>
+            </div>
+          </div>
+
+          <label class="field">
+            <span>JSON-ready choreography value</span>
+            <textarea id="sequence-output" rows="5" readonly></textarea>
+          </label>
+
+          <label class="field">
+            <span>Full JSON line</span>
+            <textarea id="json-line-output" rows="3" readonly></textarea>
+          </label>
+
+          <div class="diagnostics-panel">
+            <div class="diagnostics-header">
+              <h3>Diagnostics</h3>
+              <span id="diagnostics-count" class="diagnostics-count">0</span>
+            </div>
+            <ul id="diagnostics-list" class="diagnostics-list"></ul>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="./app.mjs"></script>
+  </body>
+</html>
